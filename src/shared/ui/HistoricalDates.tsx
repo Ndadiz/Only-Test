@@ -1,7 +1,38 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
+import gsap from "gsap";
 
 const HistoricalDates: React.FC = () => {
+  const [activeIndex, setActiveIndex] = useState<number>(6);
+  const circleRef = useRef<HTMLDivElement>(null);
+
+  const handleDotClick = (newIndex: number) => {
+    if (circleRef.current == null) return;
+
+    const totalDots = 6;
+    const angleStep = 60;
+
+    const currentIndex = activeIndex;
+
+    // Считаем шаги вперёд против часовой
+    let diff = newIndex - currentIndex;
+
+    if (diff <= 0) {
+      diff += totalDots;
+    }
+
+    const rotationAmount = diff * angleStep;
+
+    gsap.to(circleRef.current, {
+      rotation: `-=${rotationAmount}`,
+      duration: 0.8,
+      ease: "power2.inOut",
+      transformOrigin: "center center",
+    });
+
+    setActiveIndex(newIndex);
+  };
+
   return (
     <>
       {/* <GridOverlay>
@@ -9,25 +40,35 @@ const HistoricalDates: React.FC = () => {
           <GridColumn key={i} />
         ))}
       </GridOverlay> */}
-        <ContentWrapper>
-          <Header>
-            <GradientBox />
-            <Title>
-              Исторические
-              даты
-            </Title>
-          </Header>
-          <YearsSection>
-            <Year2015>2015</Year2015>
+      <ContentWrapper>
+        <Header>
+          <GradientBox />
+          <Title>Исторические даты</Title>
+        </Header>
+        <YearsSection>
+          <Year2015>2015</Year2015>
 
-            <TimelineEllipse />
+          <TimelineEllipse ref={circleRef}>
             {[...Array(6)].map((_, i) => (
-              <TimelineDot key={i + 1} index={i + 1} />
+              <TimelineDot
+                key={i + 1}
+                $index={i + 1}
+                $isActive={activeIndex === i + 1}
+                onClick={() => handleDotClick(i + 1)}
+              />
             ))}
+          </TimelineEllipse>
 
-            <Year2022>2022</Year2022>
-          </YearsSection>
-        </ContentWrapper>
+          <Badge>
+            <BadgeCircle>
+              <BadgeNumber>{activeIndex}</BadgeNumber>
+            </BadgeCircle>
+            <BadgeText>Наука</BadgeText>
+          </Badge>
+
+          <Year2022>2022</Year2022>
+        </YearsSection>
+      </ContentWrapper>
     </>
   );
 };
@@ -61,7 +102,7 @@ const ContentWrapper = styled.div`
   padding: 170px 0 104px 0;
   border-right: 1px solid rgba(66, 86, 122, 0.1);
   border-left: 1px solid rgba(66, 86, 122, 0.1);
-    &::before {
+  &::before {
     content: "";
     position: absolute;
     top: 0;
@@ -142,29 +183,74 @@ const TimelineEllipse = styled.div`
 `;
 
 interface TimelineDotProps {
-  index: number;
+  $index: number;
+  $isActive: boolean;
+  onClick: () => void;
 }
 
 const TimelineDot = styled.div<TimelineDotProps>`
   width: 6px;
   height: 6px;
-  background-color: #42567a;
+  background-color: ${({ $isActive }) =>
+    $isActive ? "#42567a" : "rgba(66, 86, 122, 0.4)"};
   border-radius: 50%;
   position: absolute;
   left: 50%;
-  top: 55%;
+  top: 50%;
+  cursor: pointer;
+  pointer-events: all;
+  transition: background-color 0.3s ease;
 
-  ${({ index }) => {
-    const startAngle = 0;
+  ${({ $index }) => {
+    const startAngle = -60;
     const angleStep = 60;
-    const angle = ((startAngle + index * angleStep) * Math.PI) / 180;
-    const radius = 267; // Половина высоты круга
+    const angle = ((startAngle + $index * angleStep) * Math.PI) / 180;
+    const radius = 267;
     const x = radius * Math.cos(angle);
     const y = radius * Math.sin(angle);
     return `
       transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px));
     `;
   }}
+
+  &:hover {
+    background-color: #42567a;
+  }
+`;
+
+const Badge = styled.div`
+  position: absolute;
+  left: calc(50% + 267px);
+  top: calc(50% - 154px);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  pointer-events: none;
+`;
+
+const BadgeCircle = styled.div`
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(66, 86, 122, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+`;
+
+const BadgeNumber = styled.span`
+  font-size: 18px;
+  font-weight: 500;
+  color: #42567a;
+`;
+
+const BadgeText = styled.span`
+  font-size: 20px;
+  font-weight: 700;
+  color: #42567a;
 `;
 
 export default HistoricalDates;
