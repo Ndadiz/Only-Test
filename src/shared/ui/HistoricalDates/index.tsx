@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import gsap from "gsap";
-import TimelineDot from "../TimelineDot/index";
-import { timelineData } from "../../../model/EventsData";
-import EventsList from "../EventsList/index";
-import { media } from "../../../app/styles/media";
+import TimelineDot from "@shared/ui/TimelineDot";
+import { timelineData } from "@model/EventsData/index";
+import EventsList from "@shared/ui/EventsList";
+import { media } from "@app/styles/media";
 
 const HistoricalDates: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(6);
@@ -187,7 +187,7 @@ const Header = styled.div`
   display: flex;
   gap: 78px;
   max-width: 431px;
-  margin-bottom: 22px;
+  margin-bottom: 96px;
 `;
 const GradientBox = styled.div`
   background-image: linear-gradient(180deg, #3877ee, #ef5da8);

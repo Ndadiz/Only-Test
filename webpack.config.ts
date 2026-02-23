@@ -1,8 +1,11 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url"
 import webpack from "webpack";
 import "webpack-dev-server";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config: webpack.Configuration = {
   entry: "./src/main.tsx",
@@ -28,6 +31,10 @@ const config: webpack.Configuration = {
     plugins: [new TsconfigPathsPlugin()],
     alias: {
       "@pages": path.resolve(__dirname, "src/pages"),
+      "@shared": path.resolve(__dirname, "src/shared"),
+      "@app": path.resolve(__dirname, "src/app"),
+      "@model": path.resolve(__dirname, "src/model"),
+      "@public": path.resolve(__dirname, "public"),
     },
   },
   output: {

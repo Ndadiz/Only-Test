@@ -1,5 +1,5 @@
-import MainPage from "../pages/main/MainPage";
-import { GlobalStyles } from "./styles/GlobalStyles";
+import MainPage from "@pages/main/MainPage";
+import { GlobalStyles } from "@app/styles/GlobalStyles";
 
 const App = () => {
     return(

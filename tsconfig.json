@@ -3,15 +3,23 @@
     "outDir": "./dist/",
     "rootDir": "./src",
     "noImplicitAny": true,
-    "module": "nodenext",
+    "module": "ESNext",
     "target": "es2015",
     "lib": ["es2017", "dom"],
     "jsx": "react-jsx",
     "allowJs": true,
-    "moduleResolution": "nodenext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@model/*": ["./src/model/*"],
+      "@app/*": ["./src/app/*"],
+      "@public/*": ["./public/*"]
+    }
   },
-  "include": [
-    "src/**/*",
-    "src/types/**/*.d.ts"
-  ],
+  "include": ["src/**/*", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules"]
 }

@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import ArrowLeft from "../../../../public/ArrowLeft.svg";
-import ArrowRight from "../../../../public/ArrowRight.svg";
-import SliderArrowLeft from "../../../../public/SliderArrowLeft.svg";
-import SliderArrowRight from "../../../../public/SliderArrowRight.svg";
+import ArrowLeft from "@public/ArrowLeft.svg";
+import ArrowRight from "@public/ArrowRight.svg";
+import SliderArrowLeft from "@public/SliderArrowLeft.svg";
+import SliderArrowRight from "@public/SliderArrowRight.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
-import { media } from "../../../app/styles/media";
+import { media } from "@app/styles/media";
 
 interface EventsListProps {
   currentIndex: number;
@@ -62,7 +62,7 @@ const EventsList: React.FC<EventsListProps> = ({
           {Array.from({ length: totalItems }).map((_, idx) => (
             <Dot
               key={idx}
-              isActive={currentIndex === idx + 1}
+              $isActive={currentIndex === idx + 1}
               onClick={() => onNavigate(idx + 1)}
             />
           ))}
@@ -282,12 +282,12 @@ const PaginationDots = styled.div`
   }
 `;
 
-const Dot = styled.button<{ isActive: boolean }>`
+const Dot = styled.button<{ $isActive: boolean }>`
   width: 6px;
   height: 6px;
   border-radius: 50%;
   border: none;
-  background: ${({ isActive }) => (isActive ? "#42567A" : "rgba(66, 86, 122, 0.4)")};
+  background: ${({ $isActive }) => ($isActive ? "#42567A" : "rgba(66, 86, 122, 0.4)")};
   cursor: pointer;
   padding: 0;
   transition: background 0.3s ease;

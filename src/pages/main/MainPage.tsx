@@ -1,5 +1,5 @@
 import React from 'react'
-import HistoricalDates from '../../shared/ui/HistoricalDates'
+import HistoricalDates from '@shared/ui/HistoricalDates'
 
 function MainPage() {
   return (
