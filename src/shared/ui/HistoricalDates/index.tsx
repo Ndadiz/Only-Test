@@ -1,36 +1,76 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import gsap from "gsap";
+import TimelineDot from "../TimelineDot/index";
+import { timelineData } from "../../../model/EventsData";
+import EventsList from "../EventsList/index";
 
 const HistoricalDates: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(6);
-  const circleRef = useRef<HTMLDivElement>(null);
+  const currentItem = timelineData[activeIndex - 1] ?? timelineData[0];
+  const circleRef = useRef<HTMLDivElement | null>(null);
+  // Рефы для хранения текущих отображаемых значений
+  const currentStartYear = useRef<number>(2015);
+  const currentEndYear = useRef<number>(2022);
+
+  // Рефы для DOM-элементов
+  const yearStartRef = useRef<HTMLDivElement | null>(null);
+  const yearEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleDotClick = (newIndex: number) => {
     if (circleRef.current == null) return;
+    if (newIndex === activeIndex) return;
 
     const totalDots = 6;
     const angleStep = 60;
-
     const currentIndex = activeIndex;
 
-    // Считаем шаги вперёд против часовой
     let diff = newIndex - currentIndex;
-
     if (diff <= 0) {
       diff += totalDots;
     }
 
     const rotationAmount = diff * angleStep;
 
-    gsap.to(circleRef.current, {
+    // Получаем новые значения годов
+    const newStartYear = timelineData[newIndex - 1].period.start;
+    const newEndYear = timelineData[newIndex - 1].period.end;
+
+    // Анимация вращения круга + счётчик годов
+    const tl = gsap.timeline();
+
+    tl.to(circleRef.current, {
       rotation: `-=${rotationAmount}`,
       duration: 0.8,
       ease: "power2.inOut",
       transformOrigin: "center center",
-    });
+      onUpdate: () => {
+        // Анимация счётчика для начального года
+        if (yearStartRef.current) {
+          const progress = tl.progress();
+          const interpolatedStart = Math.round(
+            currentStartYear.current +
+              (newStartYear - currentStartYear.current) * progress,
+          );
+          yearStartRef.current.textContent = interpolatedStart.toString();
+        }
 
-    setActiveIndex(newIndex);
+        // Анимация счётчика для конечного года
+        if (yearEndRef.current) {
+          const progress = tl.progress();
+          const interpolatedEnd = Math.round(
+            currentEndYear.current +
+              (newEndYear - currentEndYear.current) * progress,
+          );
+          yearEndRef.current.textContent = interpolatedEnd.toString();
+        }
+      },
+      onComplete: () => {
+        currentStartYear.current = newStartYear;
+        currentEndYear.current = newEndYear;
+        setActiveIndex(newIndex);
+      },
+    });
   };
 
   return (
@@ -46,28 +86,30 @@ const HistoricalDates: React.FC = () => {
           <Title>Исторические даты</Title>
         </Header>
         <YearsSection>
-          <Year2015>2015</Year2015>
+          <Year2015 ref={yearStartRef}>{currentItem.period.start}</Year2015>
 
           <TimelineEllipse ref={circleRef}>
-            {[...Array(6)].map((_, i) => (
+            {timelineData.map((item, i) => (
               <TimelineDot
-                key={i + 1}
-                $index={i + 1}
-                $isActive={activeIndex === i + 1}
+                key={i}
+                index={i + 1}
+                isActive={activeIndex === i + 1}
                 onClick={() => handleDotClick(i + 1)}
+                circleRef={circleRef}
+                title={item.title}
               />
             ))}
           </TimelineEllipse>
 
-          <Badge>
-            <BadgeCircle>
-              <BadgeNumber>{activeIndex}</BadgeNumber>
-            </BadgeCircle>
-            <BadgeText>Наука</BadgeText>
-          </Badge>
-
-          <Year2022>2022</Year2022>
+          <Year2022 ref={yearEndRef}>{currentItem.period.end}</Year2022>
         </YearsSection>
+
+        <EventsList
+          currentIndex={activeIndex}
+          totalItems={timelineData.length}
+          onNavigate={handleDotClick}
+          events={currentItem.events}
+        />
       </ContentWrapper>
     </>
   );
@@ -95,7 +137,6 @@ const GridColumn = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  height: 1080px;
   position: relative;
   z-index: 1;
   margin: 0 160px 0 320px;
@@ -133,6 +174,7 @@ const Header = styled.div`
   display: flex;
   gap: 78px;
   max-width: 431px;
+  margin-bottom: 96px;
 `;
 const GradientBox = styled.div`
   background-image: linear-gradient(180deg, #3877ee, #ef5da8);
@@ -146,18 +188,22 @@ const Title = styled.h1`
 `;
 
 const YearsSection = styled.div`
+  pointer-events: none;
   gap: 85px;
   display: flex;
   align-items: center;
+  justify-content: center;
   position: relative;
   padding: 0 250px 0 217px;
+  margin-bottom: 137px;
 `;
 
 const Year2015 = styled.div`
+  pointer-events: none;
   font-size: 200px;
   font-weight: 700;
   color: #5d5fef;
-  line-height: 160%;
+  line-height: 160px;
   letter-spacing: -0.02em;
 `;
 
@@ -165,7 +211,7 @@ const Year2022 = styled.div`
   font-size: 200px;
   font-weight: 700;
   color: #ef5da8;
-  line-height: 160%;
+  line-height: 160px;
   letter-spacing: -0.02em;
 `;
 
@@ -180,77 +226,6 @@ const TimelineEllipse = styled.div`
   border-radius: 50%;
   z-index: 0;
   pointer-events: none;
-`;
-
-interface TimelineDotProps {
-  $index: number;
-  $isActive: boolean;
-  onClick: () => void;
-}
-
-const TimelineDot = styled.div<TimelineDotProps>`
-  width: 6px;
-  height: 6px;
-  background-color: ${({ $isActive }) =>
-    $isActive ? "#42567a" : "rgba(66, 86, 122, 0.4)"};
-  border-radius: 50%;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  cursor: pointer;
-  pointer-events: all;
-  transition: background-color 0.3s ease;
-
-  ${({ $index }) => {
-    const startAngle = -60;
-    const angleStep = 60;
-    const angle = ((startAngle + $index * angleStep) * Math.PI) / 180;
-    const radius = 267;
-    const x = radius * Math.cos(angle);
-    const y = radius * Math.sin(angle);
-    return `
-      transform: translate(calc(-50% + ${x}px), calc(-50% + ${y}px));
-    `;
-  }}
-
-  &:hover {
-    background-color: #42567a;
-  }
-`;
-
-const Badge = styled.div`
-  position: absolute;
-  left: calc(50% + 267px);
-  top: calc(50% - 154px);
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 10;
-  pointer-events: none;
-`;
-
-const BadgeCircle = styled.div`
-  width: 48px;
-  height: 48px;
-  border: 1px solid rgba(66, 86, 122, 0.4);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.9);
-`;
-
-const BadgeNumber = styled.span`
-  font-size: 18px;
-  font-weight: 500;
-  color: #42567a;
-`;
-
-const BadgeText = styled.span`
-  font-size: 20px;
-  font-weight: 700;
-  color: #42567a;
 `;
 
 export default HistoricalDates;
