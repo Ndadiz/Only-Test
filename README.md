@@ -10,4 +10,4 @@ cd Only-Test
 3. Запустите проект:
 * npm start
 
-Ссылка на приложение: https://only-test-8fzifk65g-nikitas-projects-193dab66.vercel.app/
+Ссылка на приложение: https://only-test-sigma.vercel.app/
