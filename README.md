@@ -3,9 +3,10 @@
 ```bash
 git clone https://github.com/Ndadiz/Only-Test.git
 ```
-cd
+cd Only-Test
+
 2. Установите зависимости:
-npm install
+* npm install
 3. Запустите проект:
-npm start
+* npm start
 Ссылка на приложение: https://only-test-8fzifk65g-nikitas-projects-193dab66.vercel.app/
