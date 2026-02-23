@@ -4,11 +4,13 @@ import gsap from "gsap";
 import TimelineDot from "../TimelineDot/index";
 import { timelineData } from "../../../model/EventsData";
 import EventsList from "../EventsList/index";
+import { media } from "../../../app/styles/media";
 
 const HistoricalDates: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(6);
   const currentItem = timelineData[activeIndex - 1] ?? timelineData[0];
   const circleRef = useRef<HTMLDivElement | null>(null);
+
   // Рефы для хранения текущих отображаемых значений
   const currentStartYear = useRef<number>(2015);
   const currentEndYear = useRef<number>(2022);
@@ -87,7 +89,6 @@ const HistoricalDates: React.FC = () => {
         </Header>
         <YearsSection>
           <Year2015 ref={yearStartRef}>{currentItem.period.start}</Year2015>
-
           <TimelineEllipse ref={circleRef}>
             {timelineData.map((item, i) => (
               <TimelineDot
@@ -100,10 +101,9 @@ const HistoricalDates: React.FC = () => {
               />
             ))}
           </TimelineEllipse>
-
           <Year2022 ref={yearEndRef}>{currentItem.period.end}</Year2022>
         </YearsSection>
-
+        <CategoryTitle>{currentItem.title}</CategoryTitle>
         <EventsList
           currentIndex={activeIndex}
           totalItems={timelineData.length}
@@ -143,6 +143,13 @@ const ContentWrapper = styled.div`
   padding: 170px 0 104px 0;
   border-right: 1px solid rgba(66, 86, 122, 0.1);
   border-left: 1px solid rgba(66, 86, 122, 0.1);
+
+  ${media.mobile} {
+    border: none;
+    padding: 59px 0 13.33px 0;
+    margin: 0 27px 0 20px;
+  }
+
   &::before {
     content: "";
     position: absolute;
@@ -154,6 +161,9 @@ const ContentWrapper = styled.div`
     background-color: rgba(66, 86, 122, 0.1);
     pointer-events: none;
     z-index: 0;
+    ${media.mobile} {
+      display: none;
+    }
   }
 
   &::after {
@@ -167,6 +177,9 @@ const ContentWrapper = styled.div`
     background-color: rgba(66, 86, 122, 0.1);
     pointer-events: none;
     z-index: 0;
+    ${media.mobile} {
+      display: none;
+    }
   }
 `;
 
@@ -174,17 +187,24 @@ const Header = styled.div`
   display: flex;
   gap: 78px;
   max-width: 431px;
-  margin-bottom: 96px;
+  margin-bottom: 22px;
 `;
 const GradientBox = styled.div`
   background-image: linear-gradient(180deg, #3877ee, #ef5da8);
   width: 5px;
+  ${media.mobile} {
+    display: none;
+  }
 `;
 const Title = styled.h1`
   font-size: 56px;
   font-weight: 700;
   color: #42567a;
   line-height: 120%;
+  ${media.mobile} {
+    max-width: 123px;
+    font-size: 20px;
+  }
 `;
 
 const YearsSection = styled.div`
@@ -196,6 +216,11 @@ const YearsSection = styled.div`
   position: relative;
   padding: 0 250px 0 217px;
   margin-bottom: 137px;
+  ${media.mobile} {
+    padding: 0;
+    margin-bottom: 58px;
+    gap: 20px;
+  }
 `;
 
 const Year2015 = styled.div`
@@ -205,6 +230,10 @@ const Year2015 = styled.div`
   color: #5d5fef;
   line-height: 160px;
   letter-spacing: -0.02em;
+  ${media.mobile} {
+    font-size: 56px;
+    line-height: normal;
+  }
 `;
 
 const Year2022 = styled.div`
@@ -213,12 +242,30 @@ const Year2022 = styled.div`
   color: #ef5da8;
   line-height: 160px;
   letter-spacing: -0.02em;
+  ${media.mobile} {
+    font-size: 56px;
+    line-height: normal;
+  }
 `;
 
+const CategoryTitle = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #42567a;
+  text-align: left;
+  display: none;
+  
+  ${media.mobile} {
+    display: block;
+    border-bottom: 1px solid #c7cdd9 ;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+`;
 const TimelineEllipse = styled.div`
   position: absolute;
   left: 50%;
-  top: 55%;
+  top: 50%;
   transform: translate(-50%, -50%);
   width: 536px;
   height: 530px;
@@ -226,6 +273,10 @@ const TimelineEllipse = styled.div`
   border-radius: 50%;
   z-index: 0;
   pointer-events: none;
+
+  ${media.mobile} {
+    display: none;
+  }
 `;
 
 export default HistoricalDates;

@@ -40,7 +40,7 @@ const TimelineDot: React.FC<{
     }
   }, [isActive]);
 
-  // 2. Компенсация вращения (применяем к якорю DotBox)
+  // 2. Компенсация вращения
   useEffect(() => {
     if (!boxRef.current || !circleRef.current) return;
 

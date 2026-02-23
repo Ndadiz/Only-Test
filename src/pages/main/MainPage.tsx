@@ -3,7 +3,9 @@ import HistoricalDates from '../../shared/ui/HistoricalDates'
 
 function MainPage() {
   return (
+    <>
     <HistoricalDates />
+    </>
   )
 }
 
